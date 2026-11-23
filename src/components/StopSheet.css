@@ -99,31 +99,6 @@
   font-size: 17px;
 }
 
-.sheet-photos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 8px;
-  margin: 16px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.sheet-photos img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: 10px;
-  background: var(--paper-lo);
-}
-
-.sheet-photos span {
-  display: block;
-  margin-top: 4px;
-  font-size: 13px;
-  color: var(--ink-2);
-}
-
 .sheet-body > .btn-primary {
   margin-top: 20px;
   min-height: 52px;

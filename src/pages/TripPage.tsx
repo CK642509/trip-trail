@@ -85,7 +85,7 @@ function TripLoader({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (trip.status === 'ok') {
-      const { title, start, end } = trip.data
+      const { title, start, end } = trip.data.trip
       remember({ slug, title, start, end })
       document.title = title
     }
@@ -107,5 +107,5 @@ function TripLoader({ slug }: { slug: string }) {
       </StatusScreen>
     )
   }
-  return <TripView trip={trip.data} />
+  return <TripView trip={trip.data.trip} updatedAt={trip.data.updatedAt} />
 }

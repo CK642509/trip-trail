@@ -1,0 +1,146 @@
+.offline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  background: #f3e2c4;
+  color: #6b4a12;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.offline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c98a1c;
+  box-shadow: 0 0 0 3px rgb(201 138 28 / 0.2);
+}
+
+.offline-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
+  margin-left: auto;
+  padding: 4px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--paper-hi);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.offline-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.offline-panel {
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow: 0 20px 60px rgb(30 20 10 / 0.3);
+}
+
+.offline-panel::backdrop {
+  background: rgb(35 32 27 / 0.35);
+}
+
+.offline-inner {
+  padding: 8px 22px 22px;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.offline-inner header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: -12px;
+}
+
+.offline-inner h2 {
+  font-size: 21px;
+}
+
+.offline-inner header button {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  background: none;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.offline-inner p {
+  margin: 8px 0 0;
+}
+
+.offline-note {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.offline-photos {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+.offline-count strong {
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+.offline-photos progress {
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--paper-lo);
+  overflow: hidden;
+  appearance: none;
+}
+
+.offline-photos progress::-webkit-progress-bar {
+  background: var(--paper-lo);
+}
+
+.offline-photos progress::-webkit-progress-value {
+  background: var(--seal);
+  transition: width 0.2s ease;
+}
+
+.offline-photos progress::-moz-progress-bar {
+  background: var(--seal);
+}
+
+.offline-status {
+  font-weight: 600;
+}
+
+.offline-status.is-error {
+  color: var(--seal);
+}
+
+.offline-photos .btn {
+  margin-top: 14px;
+  min-height: 52px;
+  font-size: 17px;
+}

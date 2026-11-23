@@ -10,7 +10,7 @@ export class LoadError extends Error {
   }
 }
 
-async function getJson<T>(url: string): Promise<T> {
+async function getResponse(url: string): Promise<Response> {
   let res: Response
   try {
     res = await fetch(url)
@@ -19,10 +19,21 @@ async function getJson<T>(url: string): Promise<T> {
   }
   if (res.status === 404) throw new LoadError('找不到資料', 'notFound')
   if (!res.ok) throw new LoadError(`載入失敗（${res.status}）`, 'network')
-  return (await res.json()) as T
+  return res
 }
 
-export const fetchIndex = () => getJson<TripsIndex>('/trips/index.json')
+export const fetchIndex = async () =>
+  (await (await getResponse('/trips/index.json')).json()) as TripsIndex
+
+export type LoadedTrip = {
+  trip: Trip
+  /** 伺服器產生這份資料的時間；離線時 Service Worker 給的是快取，時間會比較舊 */
+  updatedAt: Date | null
+}
 
 /** 資料在建置時已經驗證過，這裡直接使用。 */
-export const fetchTrip = (slug: string) => getJson<Trip>(`/trips/${slug}.json`)
+export async function fetchTrip(slug: string): Promise<LoadedTrip> {
+  const res = await getResponse(`/trips/${slug}.json`)
+  const date = Date.parse(res.headers.get('date') ?? '')
+  return { trip: (await res.json()) as Trip, updatedAt: Number.isNaN(date) ? null : new Date(date) }
+}

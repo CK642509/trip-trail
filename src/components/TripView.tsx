@@ -10,6 +10,7 @@ import { DaySection } from './DaySection.tsx'
 import { snapHeight, type Snap } from '../lib/drawer.ts'
 import { ListDrawer } from './ListDrawer.tsx'
 import { Markdown } from './Markdown.tsx'
+import { OfflineBadge, OfflineButton } from './OfflinePanel.tsx'
 import { StopSheet, type StopRef } from './StopSheet.tsx'
 import './TripView.css'
 
@@ -18,7 +19,7 @@ type Tab = 'plan' | 'info'
 /** 手機上詳細資訊卡最多占畫面的比例（StopSheet.css 也要一致） */
 const SHEET_RATIO = 0.62
 
-export function TripView({ trip }: { trip: Trip }) {
+export function TripView({ trip, updatedAt }: { trip: Trip; updatedAt: Date | null }) {
   const url = useLocation()
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const allIds = trip.days.map((d) => d.id)
@@ -82,7 +83,9 @@ export function TripView({ trip }: { trip: Trip }) {
           <p className="trip-meta">
             {formatRange(trip.start, trip.end)}・{formatLength(trip.start, trip.end)}
           </p>
+          <OfflineBadge updatedAt={updatedAt} />
         </div>
+        <OfflineButton trip={trip} />
       </div>
     </header>
   )

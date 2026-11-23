@@ -4,6 +4,7 @@ import type { Trip } from '../data/schema.ts'
 import { formatDay } from '../lib/format.ts'
 import { directionsUrl, placeUrl } from '../lib/googleMaps.ts'
 import { Markdown } from './Markdown.tsx'
+import { PhotoStrip } from './Photos.tsx'
 import './StopSheet.css'
 
 export type StopRef = { dayId: number; stopId: string }
@@ -51,7 +52,9 @@ export function StopSheet({
       className="sheet"
       style={day ? ({ '--day': dayColor(day.color, dayIndex) } as CSSProperties) : undefined}
       aria-labelledby="sheet-title"
-      onClose={onClose}
+      onClose={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
       onClick={(e) => {
         // 點背景關閉
         if (e.target === e.currentTarget) onClose()
@@ -80,16 +83,7 @@ export function StopSheet({
             {stop.note && <Markdown className="sheet-note" text={stop.note} />}
 
             {stop.photos && stop.photos.length > 0 && (
-              <ul className="sheet-photos">
-                {stop.photos.map((p) => (
-                  <li key={p.src}>
-                    <a href={p.src} target="_blank" rel="noopener noreferrer">
-                      <img src={p.thumb ?? p.src} alt={p.caption ?? stop.name} loading="lazy" />
-                    </a>
-                    {p.caption && <span>{p.caption}</span>}
-                  </li>
-                ))}
-              </ul>
+              <PhotoStrip key={stop.id} photos={stop.photos} name={stop.name} />
             )}
 
             <a
