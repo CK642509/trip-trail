@@ -32,6 +32,11 @@
       "minLength": 1,
       "description": "IANA 時區，例如 Asia/Tokyo"
     },
+    "region": {
+      "description": "Google 地圖的地區代碼（ISO 3166-1），影響地名和邊界顯示；預設 JP",
+      "type": "string",
+      "pattern": "^[A-Z]{2}$"
+    },
     "info": {
       "description": "旅程總覽：航班、住宿、票券等",
       "anyOf": [
@@ -169,7 +174,9 @@
                         "minLength": 1
                       }
                     },
-                    "required": ["src"],
+                    "required": [
+                      "src"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -178,7 +185,11 @@
                   "type": "boolean"
                 }
               },
-              "required": ["id", "name", "ll"],
+              "required": [
+                "id",
+                "name",
+                "ll"
+              ],
               "additionalProperties": false
             }
           },
@@ -199,7 +210,16 @@
                 },
                 "mode": {
                   "type": "string",
-                  "enum": ["rail", "subway", "bus", "boat", "walk", "taxi", "flight", "open"]
+                  "enum": [
+                    "rail",
+                    "subway",
+                    "bus",
+                    "boat",
+                    "walk",
+                    "taxi",
+                    "flight",
+                    "open"
+                  ]
                 },
                 "label": {
                   "type": "string",
@@ -253,7 +273,11 @@
                   "type": "boolean"
                 }
               },
-              "required": ["from", "to", "mode"],
+              "required": [
+                "from",
+                "to",
+                "mode"
+              ],
               "additionalProperties": false
             }
           },
@@ -276,16 +300,32 @@
                   }
                 }
               },
-              "required": ["name", "stops"],
+              "required": [
+                "name",
+                "stops"
+              ],
               "additionalProperties": false
             }
           }
         },
-        "required": ["id", "date", "title", "stops"],
+        "required": [
+          "id",
+          "date",
+          "title",
+          "stops"
+        ],
         "additionalProperties": false
       }
     }
   },
-  "required": ["schemaVersion", "slug", "title", "start", "end", "timezone", "days"],
+  "required": [
+    "schemaVersion",
+    "slug",
+    "title",
+    "start",
+    "end",
+    "timezone",
+    "days"
+  ],
   "additionalProperties": false
 }

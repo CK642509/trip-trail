@@ -84,6 +84,11 @@ export const TripSchema = z.strictObject({
   start: z.iso.date(),
   end: z.iso.date(),
   timezone: z.string().min(1).describe('IANA 時區，例如 Asia/Tokyo'),
+  region: z
+    .string()
+    .regex(/^[A-Z]{2}$/, '地區代碼是兩個大寫英文字母，例如 JP')
+    .optional()
+    .describe('Google 地圖的地區代碼（ISO 3166-1），影響地名和邊界顯示；預設 JP'),
   info: markdown.optional().describe('旅程總覽：航班、住宿、票券等'),
   days: z.array(DaySchema).min(1),
 })
