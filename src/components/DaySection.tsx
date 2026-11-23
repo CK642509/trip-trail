@@ -11,12 +11,18 @@ import './DaySection.css'
 export function DaySection({
   day,
   index,
+  isToday = false,
+  nextStop = null,
   selectedStop,
   onOpenDay,
   onSelectStop,
 }: {
   day: Day
   index: number
+  /** 旅途中的今天 */
+  isToday?: boolean
+  /** 今天的下一站（依景點時間推算） */
+  nextStop?: string | null
   /** 目前打開詳細資訊的景點，列表上標示出來 */
   selectedStop?: string | null
   /** 全部天數模式下，點標題切換到這一天 */
@@ -35,6 +41,7 @@ export function DaySection({
       </span>
       <span className="day-head-text">
         <span className="day-date">
+          {isToday && <span className="day-today">今天</span>}
           {md}（{weekday}）
         </span>
         <span className="day-title">{day.title}</span>
@@ -65,6 +72,7 @@ export function DaySection({
               item={item}
               n={i}
               selected={item.stop.id === selectedStop}
+              next={item.stop.id === nextStop}
               onSelect={onSelectStop}
             />
           ) : (
@@ -80,11 +88,13 @@ function StopRow({
   item,
   n,
   selected,
+  next,
   onSelect,
 }: {
   item: StopItem
   n: number
   selected: boolean
+  next: boolean
   onSelect: (id: string) => void
 }) {
   const { stop, order, group } = item
@@ -96,6 +106,7 @@ function StopRow({
     group?.label && 'group-start',
     group?.last && 'group-end',
     selected && 'is-selected',
+    next && 'is-next',
   ]
     .filter(Boolean)
     .join(' ')
@@ -112,6 +123,7 @@ function StopRow({
           {order}
         </span>
         <span className="stop-body">
+          {next && <span className="stop-next">下一站</span>}
           {stop.time && <span className="stop-time">{stop.time}</span>}
           <span className="stop-name">
             {stop.name}

@@ -318,3 +318,38 @@ button.day-head-btn {
     transform: translateY(8px);
   }
 }
+
+/* 「今天」模式 */
+.day-today {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--seal);
+  color: var(--seal-ink);
+  font-size: 13px;
+  line-height: 1.6;
+  vertical-align: 1px;
+}
+
+.tl-stop.is-next > .stop-btn {
+  background: color-mix(in srgb, var(--seal) 7%, var(--paper-hi));
+  box-shadow: inset 4px 0 0 var(--seal);
+}
+
+.tl-stop.is-next .stop-num {
+  box-shadow:
+    0 0 0 3px var(--paper-hi),
+    0 0 0 5.5px var(--seal);
+}
+
+.stop-next {
+  justify-self: start;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--seal);
+  color: var(--seal-ink);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}

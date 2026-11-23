@@ -110,3 +110,19 @@
 .day-tab-multi[aria-pressed='true'] .day-tab-date {
   color: rgb(255 255 255 / 0.8);
 }
+
+/* 今天：日期改寫「今天」，加上紅色印記 */
+.day-tab.is-today .day-tab-date {
+  color: var(--seal);
+  font-weight: 700;
+}
+
+.day-tab.is-today[aria-pressed='true'] .day-tab-date {
+  color: #fff;
+}
+
+.day-tab.is-today .day-tab-date::before {
+  content: '● ';
+  font-size: 9px;
+  vertical-align: 2px;
+}

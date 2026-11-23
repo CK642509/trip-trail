@@ -1,9 +1,10 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Trip } from '../data/schema.ts'
 import { useMediaQuery } from '../hooks/useMediaQuery.ts'
 import { normalizeSelection, tapDay, toSingle, type DaySelection } from '../lib/daySelection.ts'
 import { formatLength, formatRange } from '../lib/format.ts'
 import { daysFromHash, hashForDays, navigate, useLocation } from '../lib/router.ts'
+import { nextStopId, todayDay, tripClock, useTripClock } from '../lib/today.ts'
 import { TripMap, type MapFocus, type MapPadding } from '../map/TripMap.tsx'
 import { DayTabs } from './DayTabs.tsx'
 import { DaySection } from './DaySection.tsx'
@@ -20,7 +21,17 @@ type Tab = 'plan' | 'info'
 const SHEET_RATIO = 0.62
 
 export function TripView({ trip, updatedAt }: { trip: Trip; updatedAt: Date | null }) {
+  // 旅途中打開（網址沒有指定天數）時，直接切到今天
+  const [autoToday] = useState(() => {
+    if (location.hash) return false
+    const day = todayDay(trip, tripClock(trip.timezone))
+    if (day) history.replaceState(null, '', `${location.pathname}${location.search}#day-${day.id}`)
+    return day !== null
+  })
   const url = useLocation()
+  const clock = useTripClock(trip.timezone)
+  const today = todayDay(trip, clock)
+  const nextId = today ? nextStopId(today, clock.minutes) : null
   const isDesktop = useMediaQuery('(min-width: 768px)')
   const allIds = trip.days.map((d) => d.id)
   const selection = normalizeSelection(daysFromHash(url.hash), allIds)
@@ -34,6 +45,18 @@ export function TripView({ trip, updatedAt }: { trip: Trip; updatedAt: Date | nu
   const [snap, setSnap] = useState<Snap>('half')
   const stageRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+
+  // 自動切到今天時，把列表捲到下一站
+  useEffect(() => {
+    const box = listRef.current
+    const row = box?.querySelector<HTMLElement>('.tl-stop.is-next')
+    if (!autoToday || !box || !row) return
+    // 手機的抽屜只露出一半，下一站要捲到最上面才看得到；桌機上方有固定的天數列
+    const margin = isDesktop ? 130 : 20
+    const offset = row.getBoundingClientRect().top - box.getBoundingClientRect().top
+    if (offset > margin) box.scrollTo({ top: box.scrollTop + offset - margin })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 只在打開時做一次
+  }, [])
 
   function setSelection(sel: DaySelection) {
     setTab('plan')
@@ -120,6 +143,7 @@ export function TripView({ trip, updatedAt }: { trip: Trip; updatedAt: Date | nu
     <DayTabs
       days={trip.days}
       selection={selection}
+      todayId={today?.id ?? null}
       multi={multi}
       onAll={() => setSelection(null)}
       onDay={(id) => setSelection(tapDay(selection, id, multi, allIds))}
@@ -141,6 +165,8 @@ export function TripView({ trip, updatedAt }: { trip: Trip; updatedAt: Date | nu
           key={day.id}
           day={day}
           index={trip.days.indexOf(day)}
+          isToday={day.id === today?.id}
+          nextStop={day.id === today?.id ? nextId : null}
           selectedStop={selected?.dayId === day.id ? selected.stopId : null}
           onOpenDay={
             visibleDays.length > 1

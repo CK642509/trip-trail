@@ -9,6 +9,7 @@ import './DayTabs.css'
 export function DayTabs({
   days,
   selection,
+  todayId,
   multi,
   onAll,
   onDay,
@@ -16,6 +17,8 @@ export function DayTabs({
 }: {
   days: Day[]
   selection: DaySelection
+  /** 旅途中的今天，按鈕上寫「今天」 */
+  todayId: number | null
   multi: boolean
   onAll: () => void
   onDay: (id: number) => void
@@ -40,22 +43,21 @@ export function DayTabs({
         {days.map((day, i) => {
           const { md, weekday } = dayParts(day.date)
           const on = selection?.includes(day.id) ?? false
+          const isToday = day.id === todayId
           return (
             <button
               key={day.id}
-              className={`day-tab${multi ? ' is-multi' : ''}`}
+              className={`day-tab${multi ? ' is-multi' : ''}${isToday ? ' is-today' : ''}`}
               style={{ '--day': dayColor(day.color, i) } as CSSProperties}
               aria-pressed={on}
-              aria-label={`Day ${day.id}，${md} 星期${weekday}，${day.title}`}
+              aria-label={`Day ${day.id}，${isToday ? '今天，' : ''}${md} 星期${weekday}，${day.title}`}
               onClick={() => onDay(day.id)}
             >
               <span className="day-tab-num">
                 {multi && <span className="day-tab-check" aria-hidden />}
                 Day {day.id}
               </span>
-              <span className="day-tab-date">
-                {md}（{weekday}）
-              </span>
+              <span className="day-tab-date">{isToday ? '今天' : `${md}（${weekday}）`}</span>
             </button>
           )
         })}
