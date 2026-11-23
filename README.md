@@ -12,12 +12,22 @@ cp .env.example .env   # 填入 Google Maps API key
 npm run dev
 ```
 
-| 指令             | 用途                     |
-| ---------------- | ------------------------ |
-| `npm run dev`    | 本機開發伺服器           |
-| `npm run build`  | 型別檢查並建置到 `dist/` |
-| `npm run lint`   | oxlint                   |
-| `npm run format` | Prettier 格式化          |
+| 指令                                     | 用途                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`                            | 本機開發伺服器                                                   |
+| `npm run build`                          | 型別檢查並建置到 `dist/`                                         |
+| `npm run lint`                           | oxlint                                                           |
+| `npm run format`                         | Prettier 格式化                                                  |
+| `npm test`                               | 單元測試（Vitest）                                               |
+| `npm run validate`                       | 驗證 `trips/*/trip.json`                                         |
+| `npm run hash-password -- <slug> <密碼>` | 產生旅程密碼 hash，貼到 `.env` 和 Vercel                         |
+| `npm run gen-schema`                     | 改了 `src/data/schema.ts` 後，重新產生 `schema/trip.schema.json` |
+
+## 新增或修改行程
+
+行程放在 `trips/<slug>/trip.json`，格式見 [SPEC.md](SPEC.md) §4。用 VS Code 編輯時會依 `schema/trip.schema.json` 自動完成和檢查。改完跑 `npm run validate`；格式有錯時建置會失敗。
+
+每趟旅程都要設定密碼 hash：執行 `npm run hash-password -- <slug> <密碼>`，把印出的那一行加到 `.env` 和 Vercel 的環境變數。正式環境缺少 hash 時建置會失敗。
 
 ## 部署
 
