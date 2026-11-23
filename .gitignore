@@ -13,3 +13,6 @@ dist/
 !.vscode/extensions.json
 test-results/
 playwright-report/
+
+# scripts/photos 的本機輸出
+photos-out/

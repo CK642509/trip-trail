@@ -187,7 +187,8 @@ git repo ──push──▶ Vercel build（Vite）──▶ 靜態檔案 + Serv
   - `/trips/<slug>.json`：network-first，離線時用快取，畫面上標示「資料更新時間」。
   - 照片：cache-first，看過的離線也看得到；另外提供「下載這趟旅程供離線使用」按鈕，一次快取全部照片並顯示進度。
   - Google Maps 的程式和圖磚：**不快取**（技術上做不到，也違反 Google 條款），離線時沒有地圖。
-- 照片快取需要在 R2 bucket 設定 CORS（允許 `*.vercel.app` 和 `localhost`），否則瀏覽器存的是 opaque response，會占用大量儲存配額。
+- 照片快取需要在 R2 bucket 設定 CORS（允許正式網址和 `localhost`），而且 `<img>` 要用 `crossOrigin="anonymous"` 載入，否則瀏覽器存的是 opaque response，會占用大量儲存配額。
+- 「資料更新時間」用行程 JSON 回應的 `Date` 標頭判斷：離線時拿到的是快取，時間比較舊。
 - **iOS 注意**：從 Safari 加到主畫面後，主畫面 App 和 Safari 的 localStorage 是分開的，第一次從主畫面打開需要再輸入一次密碼。要在實機上驗證。
 
 ### 5.6 「今天」模式（加分項）
@@ -251,4 +252,5 @@ trip-trail/
 
 1. 建立 Google Map ID，填進 `.env` 的 `VITE_GOOGLE_MAP_ID`（Phase 3 前完成即可）。
 2. API key 加上 HTTP referrer 和 API 限制（第一次部署、拿到 Vercel 網址後）。
-3. 建立 Cloudflare R2 bucket，開啟 `r2.dev` 公開網址並設定 CORS（Phase 5 前完成即可）。
+3. ~~建立 Cloudflare R2 bucket，開啟 `r2.dev` 公開網址並設定 CORS~~（已完成）。
+4. 建立 R2 API token，把 `R2_*` 填進 `.env`（上傳照片時才需要）。
