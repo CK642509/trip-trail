@@ -46,7 +46,7 @@ git repo ──push──▶ Vercel build（Vite）──▶ 靜態檔案 + Serv
 | 建置     | Vite + TypeScript                                                 | 原型 SPEC 的建議，Vercel 原生支援                                                |
 | UI 框架  | React                                                             | `@vis.gl/react-google-maps`（Google 官方維護的 React 綁定）最成熟                |
 | 地圖     | Google Maps JS API：`AdvancedMarkerElement`、`Polyline`、`Circle` | 標記用 HTML 自訂樣式；線型和箭頭用 Polyline 的 `icons`（原生支援重複箭頭和虛線） |
-| 叢集     | `@googlemaps/markerclusterer`                                     | 解決原型 §3 #4、#5 的標記重疊                                                    |
+| 叢集     | 自己寫（`src/map/places.ts`），依標記實際寬度判斷重疊             | 解決原型 §3 #4、#5 的標記重疊；景點不到百個，不需要外部套件，也能和合併標記整合  |
 | 資料驗證 | Zod，並輸出 JSON Schema                                           | 建置時擋錯；VS Code 改 JSON 有自動完成和錯誤提示                                 |
 | PWA      | `vite-plugin-pwa`（Workbox）                                      | 預先快取 app shell，執行時快取行程與照片                                         |
 | 測試     | Vitest（資料邏輯）＋ Playwright（截圖、console 無錯誤）           |                                                                                  |
