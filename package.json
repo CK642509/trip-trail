@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "validate": "node scripts/validate.ts",
     "hash-password": "node scripts/hash-password.ts",
-    "gen-schema": "node scripts/gen-schema.ts"
+    "gen-schema": "node scripts/gen-schema.ts",
+    "photos": "node scripts/photos.ts"
   },
   "dependencies": {
     "@vis.gl/react-google-maps": "^1.10.2",
@@ -31,10 +32,13 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "aws4fetch": "^1.0.20",
     "oxlint": "^1.94.0",
     "prettier": "^3.10.1",
+    "sharp": "^0.35.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.1"
   }
 }
