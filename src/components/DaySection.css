@@ -132,6 +132,10 @@ button.day-head-btn {
   background: color-mix(in srgb, var(--day) 5%, transparent);
 }
 
+.stop-btn[aria-current='true'] {
+  background: color-mix(in srgb, var(--day) 11%, transparent);
+}
+
 .stop-num {
   position: relative;
   z-index: 1;

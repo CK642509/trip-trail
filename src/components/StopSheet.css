@@ -1,8 +1,8 @@
-/* 手機：從下方滑出的抽屜 */
+/* 手機：從下方滑出的抽屜，上方留給地圖（高度比例和 TripView 的 SHEET_RATIO 一致） */
 .sheet {
   width: 100%;
   max-width: 100%;
-  max-height: 90dvh;
+  max-height: 62dvh;
   margin: auto 0 0;
   padding: 0;
   border: 0;
@@ -18,14 +18,14 @@
 }
 
 .sheet::backdrop {
-  background: rgb(35 32 27 / 0.45);
+  background: rgb(35 32 27 / 0.18);
   animation: backdrop-in 0.3s ease;
 }
 
 .sheet-inner {
   display: flex;
   flex-direction: column;
-  max-height: 90dvh;
+  max-height: 62dvh;
   border-top: 6px solid var(--day);
 }
 
@@ -208,20 +208,30 @@
   text-align: right;
 }
 
-/* 桌機：置中的卡片 */
+/* 桌機：蓋在左側行程欄上的側欄，右邊的地圖保持可見 */
 @media (min-width: 768px) {
   .sheet {
-    width: 520px;
-    margin: auto;
-    border-radius: 22px;
+    width: var(--side-w, 400px);
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: 10px 0 40px rgb(30 20 10 / 0.2);
   }
 
   .sheet[open] {
-    animation-name: sheet-pop;
+    animation-name: sheet-side;
+  }
+
+  .sheet::backdrop {
+    background: transparent;
   }
 
   .sheet-inner {
-    max-height: 82dvh;
+    height: 100%;
+    max-height: 100dvh;
+    border-top: 0;
+    border-left: 6px solid var(--day);
   }
 
   .sheet-grip {
@@ -239,10 +249,9 @@
   }
 }
 
-@keyframes sheet-pop {
+@keyframes sheet-side {
   from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.98);
+    transform: translateX(-100%);
   }
 }
 

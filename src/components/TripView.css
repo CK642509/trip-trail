@@ -1,11 +1,5 @@
-.trip {
-  min-height: 100dvh;
-}
-
 .trip-head {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  padding: 18px 18px 6px;
+  padding: 18px 18px 10px;
 }
 
 .trip-head-inner {
@@ -39,7 +33,6 @@
 .trip-tabs {
   display: flex;
   gap: 4px;
-  margin-top: 14px;
   padding: 4px;
   background: var(--paper-lo);
   border-radius: 999px;
@@ -64,10 +57,19 @@
   box-shadow: 0 1px 3px rgb(60 45 20 / 0.15);
 }
 
-.trip-main {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  padding: 6px 12px calc(56px + var(--safe-b));
+.trip-tabs-label {
+  margin: 0;
+  padding: 8px 4px;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  text-align: center;
+}
+
+.trip-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .info-card {
@@ -84,4 +86,81 @@
     opacity: 0;
     transform: translateY(8px);
   }
+}
+
+/* ---------- 手機：上方標題＋天數，下面是地圖，行程列表是可拖拉的抽屜 ---------- */
+.trip-mobile {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.trip-mobile .trip-head {
+  flex: none;
+  padding: 8px 14px 2px;
+}
+
+.trip-mobile .trip-head-inner {
+  gap: 10px;
+}
+
+.trip-mobile .trip-title {
+  font-size: 18px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.trip-mobile .trip-meta {
+  margin: 0;
+  font-size: 13px;
+}
+
+.trip-mobile .day-tabs {
+  position: relative;
+  flex: none;
+}
+
+.trip-mobile .day-tabs-scroll {
+  padding: 6px 14px 8px;
+}
+
+.trip-mobile .trip-stage {
+  flex: 1;
+}
+
+.trip-mobile .trip-main {
+  padding: 4px 10px calc(48px + var(--safe-b));
+}
+
+/* ---------- 桌機：左側行程欄＋右側地圖 ---------- */
+.trip-desktop {
+  --side-w: 400px;
+  display: grid;
+  grid-template-columns: var(--side-w) 1fr;
+  height: 100dvh;
+}
+
+.trip-side {
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--rule);
+  box-shadow: 4px 0 18px -10px rgb(60 45 20 / 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.trip-side-tabs {
+  padding: 0 18px 10px;
+}
+
+.trip-desktop .trip-main {
+  padding: 4px 8px 48px;
+}
+
+.trip-desktop .trip-stage {
+  height: 100dvh;
 }

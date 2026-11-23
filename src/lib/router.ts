@@ -33,8 +33,16 @@ export function matchRoute(pathname: string): Route {
   return m ? { name: 'trip', slug: m[1] } : { name: 'notFound' }
 }
 
-/** #day-3 → 3 */
-export function dayFromHash(hash: string): number | null {
-  const m = /^#day-(\d+)$/.exec(hash)
-  return m ? Number(m[1]) : null
+/**
+ * 網址 hash 記錄目前選了哪幾天：
+ * 沒有 hash = 全部；#day-3 = 只看 Day 3；#day-1,3 = Day 1 和 Day 3。
+ */
+export function daysFromHash(hash: string): number[] | null {
+  const m = /^#day-(\d+(?:,\d+)*)$/.exec(hash)
+  if (!m) return null
+  return [...new Set(m[1].split(',').map(Number))].sort((a, b) => a - b)
+}
+
+export function hashForDays(ids: number[] | null): string {
+  return ids === null || ids.length === 0 ? '' : `#day-${[...ids].sort((a, b) => a - b).join(',')}`
 }

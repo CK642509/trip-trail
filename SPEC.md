@@ -82,6 +82,7 @@ git repo ──push──▶ Vercel build（Vite）──▶ 靜態檔案 + Serv
   "start": "2026-12-02",
   "end": "2026-12-08",
   "timezone": "Asia/Tokyo",
+  "region": "JP",                         // 選填，Google 地圖地區代碼，預設 JP
   "info": "## 航班\n- 去程 CI152 …\n## 票券\n…",   // 選填，Markdown：航班、住宿、票券等總覽
   "days": [
     {
@@ -162,7 +163,7 @@ git repo ──push──▶ Vercel build（Vite）──▶ 靜態檔案 + Serv
 | 9   | 景點詳細資訊                   | 改成「詳細資訊卡」：手機用底部抽屜、桌機用側欄；含時間、備註、照片、Google 地圖按鈕 |
 | 10  | 行程欄點擊飛到景點、鍵盤可操作 | 同原型                                                                              |
 | 11  | 圖例                           | 收在浮動按鈕裡                                                                      |
-| 12  | `#day-N` 單日連結              | 同原型                                                                              |
+| 12  | `#day-N` 單日連結              | 同原型；多天同時用 `#day-1,3`                                                       |
 
 ### 5.3 Google 地圖整合（ideas：「一邊看行程一邊查」）
 

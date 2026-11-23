@@ -11,11 +11,14 @@ import './DaySection.css'
 export function DaySection({
   day,
   index,
+  selectedStop,
   onOpenDay,
   onSelectStop,
 }: {
   day: Day
   index: number
+  /** 目前打開詳細資訊的景點，列表上標示出來 */
+  selectedStop?: string | null
   /** 全部天數模式下，點標題切換到這一天 */
   onOpenDay?: () => void
   onSelectStop: (stopId: string) => void
@@ -57,7 +60,13 @@ export function DaySection({
       <ol className="timeline">
         {items.map((item, i) =>
           item.kind === 'stop' ? (
-            <StopRow key={`s-${item.stop.id}`} item={item} n={i} onSelect={onSelectStop} />
+            <StopRow
+              key={`s-${item.stop.id}`}
+              item={item}
+              n={i}
+              selected={item.stop.id === selectedStop}
+              onSelect={onSelectStop}
+            />
           ) : (
             <LegRow key={`l-${i}`} item={item} n={i} />
           ),
@@ -70,10 +79,12 @@ export function DaySection({
 function StopRow({
   item,
   n,
+  selected,
   onSelect,
 }: {
   item: StopItem
   n: number
+  selected: boolean
   onSelect: (id: string) => void
 }) {
   const { stop, order, group } = item
@@ -84,6 +95,7 @@ function StopRow({
     group && 'in-group',
     group?.label && 'group-start',
     group?.last && 'group-end',
+    selected && 'is-selected',
   ]
     .filter(Boolean)
     .join(' ')
@@ -91,7 +103,11 @@ function StopRow({
   return (
     <li className={cls} style={{ '--i': n } as CSSProperties}>
       {group?.label && <span className="group-label">{group.name}</span>}
-      <button className="stop-btn" onClick={() => onSelect(stop.id)}>
+      <button
+        className="stop-btn"
+        aria-current={selected || undefined}
+        onClick={() => onSelect(stop.id)}
+      >
         <span className="stop-num" aria-label={`第 ${order} 站`}>
           {order}
         </span>

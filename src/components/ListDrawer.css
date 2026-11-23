@@ -1,0 +1,56 @@
+.drawer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--paper);
+  border-radius: 22px 22px 0 0;
+  box-shadow:
+    0 -1px 0 rgb(255 255 255 / 0.6) inset,
+    0 -8px 30px rgb(30 20 10 / 0.22);
+  transition: height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: height;
+}
+
+.drawer.is-dragging {
+  transition: none;
+}
+
+.drawer-head {
+  flex: none;
+  padding: 0 14px 10px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  border-bottom: 1px solid var(--rule);
+}
+
+.drawer-grip {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+}
+
+.drawer-grip span {
+  width: 46px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--ink-3);
+  opacity: 0.55;
+}
+
+.drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
