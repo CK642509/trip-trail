@@ -1,6 +1,7 @@
 import { resolve, sep } from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
-import { buildIndex, loadTrips, TRIPS_DIR, type LoadedTrip, type TripsIndex } from './lib/trips.ts'
+import type { TripsIndex } from '../src/data/tripsIndex.ts'
+import { buildIndex, loadTrips, TRIPS_DIR, type LoadedTrip } from './lib/trips.ts'
 
 type Options = {
   env: Record<string, string | undefined>

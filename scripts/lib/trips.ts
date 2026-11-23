@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import type { Trip } from '../../src/data/schema.ts'
 import { validateTrip } from '../../src/data/validate.ts'
 import { tripHashEnvName } from '../../src/data/password.ts'
+import type { TripsIndex } from '../../src/data/tripsIndex.ts'
 
 export const TRIPS_DIR = 'trips'
 
@@ -33,8 +34,6 @@ export function loadTrips(root: string): LoadResult {
   }
   return { trips, errors }
 }
-
-export type TripsIndex = { trips: { slug: string; hash: string | null }[] }
 
 /**
  * 依環境變數產生 slug → 密碼 hash 對照表。
