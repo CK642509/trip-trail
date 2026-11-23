@@ -1,0 +1,316 @@
+.day {
+  /* 時間軸那條線的 x 座標（相對於 .timeline） */
+  --rail-x: 28px;
+  margin-top: 22px;
+}
+
+.day + .day {
+  margin-top: 36px;
+}
+
+/* 標題：像蓋在手帖上的日期印章 */
+.day-head {
+  margin: 0 0 12px;
+  font-family: var(--sans);
+}
+
+.day-head-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+button.day-head-btn {
+  cursor: pointer;
+}
+
+.seal {
+  flex: none;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  color: var(--day);
+  border: 2.5px solid var(--day);
+  box-shadow:
+    inset 0 0 0 3px var(--paper),
+    inset 0 0 0 4.5px var(--day);
+  transform: rotate(-8deg);
+  line-height: 1;
+}
+
+.seal-day {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-right: -0.2em;
+}
+
+.seal-num {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 25px;
+}
+
+.day-head-text {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+}
+
+.day-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--day);
+  letter-spacing: 0.04em;
+}
+
+.day-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.day-open {
+  flex: none;
+  align-self: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.day-note {
+  margin: 0 6px 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--day);
+  background: color-mix(in srgb, var(--day) 6%, var(--paper-hi));
+  border-radius: 0 10px 10px 0;
+  font-size: 15px;
+}
+
+/* 時間軸 */
+.timeline {
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  background: var(--paper-hi);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.timeline > li {
+  position: relative;
+  animation: fade-up 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: min(calc(var(--i) * 22ms), 420ms);
+}
+
+/* 景點：編號圓圈的中心對齊 --rail-x */
+.stop-btn {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px 10px calc(var(--rail-x) - 18px);
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.stop-btn:hover {
+  background: color-mix(in srgb, var(--day) 5%, transparent);
+}
+
+.stop-num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--day);
+  color: #fff;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17px;
+  box-shadow: 0 0 0 3px var(--paper-hi);
+}
+
+.is-optional .stop-num {
+  background: var(--paper-hi);
+  color: var(--day);
+  border: 2.5px dashed var(--day);
+}
+
+.stop-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding-top: 5px;
+}
+
+.stop-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--day);
+}
+
+.stop-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.stop-note {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.stop-photos {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.stop-photos::before {
+  content: '▣ ';
+}
+
+.stop-chev {
+  align-self: center;
+  font-size: 24px;
+  color: var(--ink-3);
+}
+
+/* 交通：連接線和地圖用同一套線型 */
+.tl-leg {
+  min-height: 34px;
+}
+
+.leg-rail {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--rail-x) - 2px);
+  border-left: 4px solid var(--day);
+}
+
+.line-dashed .leg-rail {
+  border-left-style: dashed;
+}
+
+.line-dotted .leg-rail {
+  border-left-style: dotted;
+}
+
+.line-faint .leg-rail {
+  left: calc(var(--rail-x) - 1px);
+  border-left: 2px dashed var(--day);
+  opacity: 0.45;
+}
+
+.tl-leg.is-optional .leg-rail {
+  opacity: 0.45;
+}
+
+.leg-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 3px 12px 3px calc(var(--rail-x) + 30px);
+}
+
+.leg-icon {
+  flex: none;
+  font-size: 16px;
+}
+
+.leg-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.leg-dest {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.leg-time,
+.leg-note {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.leg-nav {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--ink-2);
+  background: var(--paper-hi);
+}
+
+/* 成群景點：同一塊淡色底，像地圖上的虛線圈。
+   左右各內縮 8px，所以裡面的 --rail-x 要扣回來，線才會對齊 */
+.in-group {
+  --rail-x: 18.5px;
+  margin: 0 8px;
+  background: color-mix(in srgb, var(--day) 7%, transparent);
+  border-left: 1.5px dashed color-mix(in srgb, var(--day) 55%, transparent);
+  border-right: 1.5px dashed color-mix(in srgb, var(--day) 55%, transparent);
+}
+
+.group-start {
+  margin-top: 8px;
+  padding-top: 26px;
+  border-top: 1.5px dashed color-mix(in srgb, var(--day) 55%, transparent);
+  border-radius: 12px 12px 0 0;
+}
+
+.group-end {
+  margin-bottom: 8px;
+  border-bottom: 1.5px dashed color-mix(in srgb, var(--day) 55%, transparent);
+  border-radius: 0 0 12px 12px;
+}
+
+.group-start.group-end {
+  border-radius: 12px;
+}
+
+.group-label {
+  position: absolute;
+  top: 5px;
+  left: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--day);
+  letter-spacing: 0.04em;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

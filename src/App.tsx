@@ -1,13 +1,18 @@
-export default function App() {
-  const hasMapsKey = Boolean(import.meta.env.VITE_GOOGLE_MAPS_API_KEY)
+import { HomePage } from './pages/HomePage.tsx'
+import { NotFoundPage } from './pages/NotFoundPage.tsx'
+import { TripPage } from './pages/TripPage.tsx'
+import { matchRoute, useLocation } from './lib/router.ts'
 
-  return (
-    <main className="placeholder">
-      <h1>trip-trail</h1>
-      <p>旅遊路線地圖，建置中。</p>
-      {import.meta.env.DEV && (
-        <p className="dev-note">Google Maps API key：{hasMapsKey ? '已設定' : '未設定'}</p>
-      )}
-    </main>
-  )
+export default function App() {
+  const url = useLocation()
+  const route = matchRoute(url.pathname)
+
+  switch (route.name) {
+    case 'home':
+      return <HomePage />
+    case 'trip':
+      return <TripPage key={route.slug} slug={route.slug} />
+    default:
+      return <NotFoundPage />
+  }
 }
