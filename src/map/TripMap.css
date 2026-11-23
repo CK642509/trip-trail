@@ -160,3 +160,283 @@
     padding-top: 40px;
   }
 }
+
+/* 多天共用的地點：每天一段顏色（D5·9 D6·1） */
+.mk-row {
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.mk-row i {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 0 7px;
+  background: var(--day);
+  color: #fff;
+  font-style: normal;
+  font-size: 14px;
+}
+
+.mk-row i + i {
+  border-left: 2px solid #fff;
+}
+
+.mk-row i.is-optional {
+  background: #fff;
+  color: var(--day);
+}
+
+/* 三天以上共用的地點（例如住宿的車站）：精簡成「D ①②③…」 */
+.mk-days {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 4px 0 7px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.mk-days b {
+  margin-right: 3px;
+  font-size: 13px;
+}
+
+.mk-days i {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  margin-left: -3px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  background: var(--day);
+  color: #fff;
+  font-style: normal;
+  font-size: 11.5px;
+}
+
+/* 叢集：縮小時重疊的地點收在一起 */
+.mk-cluster {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1;
+  box-shadow:
+    0 0 0 4px rgb(35 32 27 / 0.18),
+    0 2px 6px rgb(0 0 0 / 0.35);
+  cursor: pointer;
+}
+
+.mk-cluster-days {
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  display: flex;
+  gap: 2px;
+  padding: 2px 3px;
+  border-radius: 999px;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.mk-cluster-days i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+/* 點合併標記後的選單，顯示在標記上方 */
+.mk-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 200px;
+  max-width: 260px;
+  margin-bottom: 24px;
+  padding: 8px;
+  border: 1.5px solid var(--rule);
+  border-radius: 14px;
+  background: var(--paper-hi);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+  font-family: var(--sans);
+  animation: hint-in 0.18s ease both;
+}
+
+.mk-picker p {
+  margin: 2px 6px 4px;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.mk-picker button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mk-picker button:hover,
+.mk-picker button:focus-visible {
+  background: color-mix(in srgb, var(--day) 10%, transparent);
+}
+
+.mk-picker small {
+  display: block;
+  color: var(--day);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mk-picker-num {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--day);
+  border-radius: 50%;
+  background: var(--day);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.mk-picker-num.is-optional {
+  background: #fff;
+  color: var(--day);
+  border-style: dashed;
+}
+
+/* 成群景點的名稱 */
+.grp-label {
+  display: block;
+  margin-bottom: 4px;
+  padding: 3px 10px;
+  border: 1.5px solid var(--day);
+  border-radius: 999px;
+  background: color-mix(in srgb, #fff 92%, transparent);
+  color: var(--day);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* 圖例 */
+.map-legend {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 82px;
+  z-index: 6; /* 蓋在手機的行程抽屜上面 */
+  max-width: 340px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  padding: 10px 14px 12px;
+  border: 1.5px solid var(--rule);
+  border-radius: 16px;
+  background: var(--paper-hi);
+  box-shadow: var(--shadow);
+  animation: hint-in 0.2s ease both;
+}
+
+.map-legend header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-legend h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.map-legend header button {
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-legend ul {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-legend ul + ul {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.map-legend li {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.legend-sample {
+  display: flex;
+  justify-content: center;
+  border-radius: 6px;
+  background: #e8e4da;
+  padding: 4px 0;
+}
+
+.legend-mk {
+  min-width: 26px;
+  height: 26px;
+  font-size: 13px;
+  box-shadow: none;
+  cursor: default;
+}
+
+.legend-cluster {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  box-shadow: none;
+  cursor: default;
+}
+
+.legend-group {
+  width: 44px;
+  height: 26px;
+  border: 1.8px dashed #3d3a33;
+  border-radius: 50%;
+  background: rgb(61 58 51 / 0.07);
+}

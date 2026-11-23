@@ -3,25 +3,17 @@ import {
   APIProvider,
   APILoadingStatus,
   Map,
-  Polyline,
   useApiLoadingStatus,
   useMap,
 } from '@vis.gl/react-google-maps'
-import {
-  Component,
-  memo,
-  useEffect,
-  useMemo,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from 'react'
-import { dayColor } from '../data/modes.ts'
+import { Component, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Day, LatLng, Trip } from '../data/schema.ts'
 import { useOnline } from '../hooks/useMediaQuery.ts'
 import type { StopRef } from '../components/StopSheet.tsx'
-import { boundsOf, legPath, toLiteral } from './geo.ts'
-import { legLines, type PolylineOptions } from './legStyle.ts'
+import { boundsOf } from './geo.ts'
+import { MapLegend } from './MapLegend.tsx'
+import { Overlay } from './Overlay.tsx'
+import type { Cluster } from './places.ts'
 import './TripMap.css'
 
 export type MapPadding = { top: number; right: number; bottom: number; left: number }
@@ -95,6 +87,9 @@ function MapBody({ trip, days, selected, focus, getPadding, onSelectStop }: Prop
   const [overlay, setOverlay] = useState(true)
   const [me, setMe] = useState<google.maps.LatLngLiteral | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [legend, setLegend] = useState(false)
+  const [zoom, setZoom] = useState<number | null>(null)
+  const [openKey, setOpenKey] = useState<string | null>(null)
   const map = useMap()
 
   const fitKey = days.map((d) => d.id).join(',')
@@ -113,6 +108,28 @@ function MapBody({ trip, days, selected, focus, getPadding, onSelectStop }: Prop
     if (map && focus) flyTo(map, focus.ll, focus.padding ?? getPadding())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, focus])
+
+  // 換天數時關掉合併標記的選單
+  useEffect(() => setOpenKey(null), [fitKey])
+
+  // 點叢集：放大到看得到裡面每個地點
+  const onCluster = useCallback(
+    (c: Cluster) => {
+      if (!map) return
+      const lats = c.places.map((p) => p.ll[0])
+      const lngs = c.places.map((p) => p.ll[1])
+      map.fitBounds(
+        {
+          north: Math.max(...lats),
+          south: Math.min(...lats),
+          east: Math.max(...lngs),
+          west: Math.min(...lngs),
+        },
+        getPadding(),
+      )
+    },
+    [map, getPadding],
+  )
 
   useEffect(() => {
     if (!message) return
@@ -164,8 +181,21 @@ function MapBody({ trip, days, selected, focus, getPadding, onSelectStop }: Prop
         disableDefaultUI
         clickableIcons
         reuseMaps
+        onIdle={(e) => setZoom(e.map.getZoom() ?? null)}
+        onClick={() => setOpenKey(null)}
       >
-        {overlay && <Overlay trip={trip} days={days} selected={selected} onSelect={onSelectStop} />}
+        {overlay && zoom !== null && (
+          <Overlay
+            trip={trip}
+            days={days}
+            zoom={zoom}
+            selected={selected}
+            openKey={openKey}
+            onOpen={setOpenKey}
+            onSelect={onSelectStop}
+            onCluster={onCluster}
+          />
+        )}
         {me && (
           <AdvancedMarker position={me} zIndex={1000} title="我的位置">
             <span className="mk-me" />
@@ -186,127 +216,27 @@ function MapBody({ trip, days, selected, focus, getPadding, onSelectStop }: Prop
           icon={<IconFit />}
         />
         <MapButton label="我的位置" onClick={locate} icon={<IconLocate />} />
+        <MapButton
+          label="圖例"
+          pressed={legend}
+          onClick={() => setLegend((v) => !v)}
+          icon={<IconLegend />}
+        />
       </div>
 
-      {!overlay && (
+      {legend && <MapLegend onClose={() => setLegend(false)} />}
+
+      {!overlay && !legend && (
         <p className="map-hint" role="status">
           已隱藏行程路線，可以直接點 Google 地圖上的地點查看資訊
         </p>
       )}
-      {message && (
+      {message && !legend && (
         <p className="map-hint" role="status">
           {message}
         </p>
       )}
     </div>
-  )
-}
-
-/** 路線和景點標記。依天數 memo，平移縮放時不會重畫。 */
-const Overlay = memo(function Overlay({
-  trip,
-  days,
-  selected,
-  onSelect,
-}: {
-  trip: Trip
-  days: Day[]
-  selected: StopRef | null
-  onSelect: (ref: StopRef) => void
-}) {
-  return days.map((day) => {
-    const index = trip.days.indexOf(day)
-    const color = dayColor(day.color, index)
-    const byId = new globalThis.Map(day.stops.map((s) => [s.id, s]))
-    return (
-      <DayLayer
-        key={day.id}
-        day={day}
-        index={index}
-        color={color}
-        byId={byId}
-        selectedStop={selected?.dayId === day.id ? selected.stopId : null}
-        onSelect={onSelect}
-      />
-    )
-  })
-})
-
-function DayLayer({
-  day,
-  index,
-  color,
-  byId,
-  selectedStop,
-  onSelect,
-}: {
-  day: Day
-  index: number
-  color: string
-  byId: globalThis.Map<string, Day['stops'][number]>
-  selectedStop: string | null
-  onSelect: (ref: StopRef) => void
-}) {
-  const lines = useMemo(
-    () =>
-      day.legs.flatMap((leg, i) => {
-        const from = byId.get(leg.from)!
-        const to = byId.get(leg.to)!
-        const path = legPath(leg, from, to)
-        if (!path) return []
-        const { casing, line } = legLines(leg.mode, color, {
-          optional: leg.optional,
-          zIndex: index,
-        })
-        return [{ key: i, path: path.map(toLiteral), casing, line }]
-      }),
-    [day, byId, color, index],
-  )
-
-  return (
-    <>
-      {lines.map(({ key, path, casing, line }) => (
-        <LegPolyline key={key} path={path} casing={casing} line={line} />
-      ))}
-      {day.stops.map((stop, i) => {
-        const isSelected = stop.id === selectedStop
-        return (
-          <AdvancedMarker
-            key={stop.id}
-            position={toLiteral(stop.ll)}
-            title={`Day ${day.id} 第 ${i + 1} 站：${stop.name}`}
-            zIndex={isSelected ? 900 : index * 10 + (stop.optional ? 0 : 5)}
-            anchorLeft="-50%"
-            anchorTop="-50%"
-            onClick={() => onSelect({ dayId: day.id, stopId: stop.id })}
-          >
-            <span
-              className={`mk${stop.optional ? ' is-optional' : ''}${isSelected ? ' is-selected' : ''}`}
-              style={{ '--day': color } as CSSProperties}
-            >
-              {i + 1}
-            </span>
-          </AdvancedMarker>
-        )
-      })}
-    </>
-  )
-}
-
-function LegPolyline({
-  path,
-  casing,
-  line,
-}: {
-  path: google.maps.LatLngLiteral[]
-  casing?: PolylineOptions
-  line: PolylineOptions
-}) {
-  return (
-    <>
-      {casing && <Polyline path={path} {...casing} />}
-      <Polyline path={path} {...line} />
-    </>
   )
 }
 
@@ -423,6 +353,14 @@ function IconLocate() {
       <circle {...stroke} cx="12" cy="12" r="6.5" />
       <circle cx="12" cy="12" r="2.5" fill="currentColor" />
       <path {...stroke} d="M12 2v3 M12 19v3 M2 12h3 M19 12h3" />
+    </svg>
+  )
+}
+
+function IconLegend() {
+  return (
+    <svg {...svg}>
+      <path {...stroke} d="M4 6h3 M10 6h10 M4 12h3 M10 12h10 M4 18h3 M10 18h10" />
     </svg>
   )
 }
