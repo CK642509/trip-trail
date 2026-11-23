@@ -1,0 +1,13 @@
+# 環境變數（含 API key、密碼 hash）
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+.vercel/
+*.local
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json

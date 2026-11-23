@@ -1,0 +1,41 @@
+:root {
+  font-family:
+    system-ui,
+    -apple-system,
+    'PingFang TC',
+    'Noto Sans TC',
+    'Microsoft JhengHei',
+    sans-serif;
+  line-height: 1.5;
+  color: #1f2328;
+  background: #faf8f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+.placeholder {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+
+.placeholder h1 {
+  margin: 0 0 8px;
+}
+
+.dev-note {
+  color: #6b7280;
+  font-size: 14px;
+}

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>關西賞楓地圖行程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>/*LEAFLET_CSS*/</style>
+<style>
+:root{
+  /* 一張紙本旅遊地圖：左側行程欄 + 右側地圖；手機改為上地圖、下行程 */
+  --paper:#f6f3ec; --ink:#1f2a2e; --muted:#5d686b; --line:#d9d3c5;
+  --sea:#cfdfe4; --land:#fbf9f3; --accent:#a8461f;
+  --font-display:"Noto Serif TC","Songti TC",serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.5}
+.app{display:grid;grid-template-columns:360px 1fr;height:100%;min-height:560px}
+aside{display:flex;flex-direction:column;gap:14px;padding:18px 18px 12px;overflow-y:auto;border-right:1px solid var(--line);background:var(--paper)}
+h1{font-family:var(--font-display);font-size:22px;line-height:1.25;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.ctrl{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--land)}
+.seg button{border:0;background:transparent;padding:6px 12px;font:inherit;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{border:1px solid var(--line);background:var(--land);border-radius:8px;padding:6px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+button:focus-visible,a:focus-visible,li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px}
+.chip{display:flex;flex-direction:column;align-items:flex-start;gap:0;border:1.5px solid var(--line);background:var(--land);border-radius:8px;padding:5px 8px;cursor:pointer;font:inherit;text-align:left;color:var(--muted)}
+.chip b{display:flex;align-items:center;gap:6px;color:var(--ink);font-weight:700;font-size:13px}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+.chip span{font-size:12px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--land))}
+.chip[aria-pressed="false"]{opacity:.7}
+.list{display:flex;flex-direction:column;gap:14px}
+.day h2{font-size:15px;margin:0 0 6px;display:flex;gap:8px;align-items:baseline;text-wrap:balance}
+.day h2 .tag{color:#fff;background:var(--c);border-radius:5px;padding:0 6px;font-size:12px;white-space:nowrap}
+.day ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--c);margin-left:10px}
+.day li{position:relative;padding:4px 6px 6px 18px;cursor:pointer;border-radius:6px}
+.day li:hover{background:color-mix(in srgb,var(--c) 8%,transparent)}
+.day li .n{position:absolute;left:-11px;top:5px;width:20px;height:20px;border-radius:50%;background:var(--c);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums;border:2px solid var(--paper)}
+.day li.opt .n{background:var(--land);color:var(--c);border:2px dashed var(--c)}
+.day li .t{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.day li .nm{font-weight:500}
+.day li .nt{color:var(--muted);font-size:12px}
+.day .leg{margin:-2px 0 2px 18px;font-size:12px;color:var(--c)}
+.legend{border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:44px 1fr;gap:6px 10px;align-items:center;font-size:12px;color:var(--muted)}
+.legend svg{display:block}
+.foot{font-size:11px;color:var(--muted)}
+#map{height:100%;min-height:420px;background:var(--sea)}
+.leaflet-container{font-family:var(--font-body)}
+.pl{font-family:var(--font-display);font-weight:600;color:#4c5659;font-size:13px;white-space:nowrap;text-shadow:0 0 3px var(--land),0 0 3px var(--land)}
+.pl.water{color:#5f8796;font-style:normal;letter-spacing:.3em;text-shadow:none;font-size:12px}
+.mk{display:flex;gap:2px;transform:translate(-50%,-50%);width:max-content}
+.mk .d{min-width:24px;height:24px;padding:0 5px;border-radius:12px;background:var(--c);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mk .d.opt{background:#fff;color:var(--c);border:2px dashed var(--c)}
+.grp{font-size:12px;font-weight:700;white-space:nowrap;transform:translate(-50%,-100%);padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.85);border:1px dashed var(--c);color:var(--c);width:max-content}
+.arw{width:0;height:0}
+.pop h3{margin:0 0 2px;font-size:14px}
+.pop .meta{color:var(--muted);font-size:12px}
+.pop p{margin:4px 0 0}
+.pop a{color:var(--accent)}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:minmax(380px,55%) minmax(260px,45%);min-height:680px}
+  #map{grid-row:1}
+  aside{grid-row:2;border-right:0;border-top:1px solid var(--line);padding:12px 16px}
+  h1{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){.leaflet-zoom-anim .leaflet-zoom-animated{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div>
+      <h1>關西賞楓・海之京都 地圖行程</h1>
+      <div class="sub">2026/12/2–12/8・7 天 6 夜・京都 4 晚＋天王寺 2 晚</div>
+    </div>
+    <div class="ctrl">
+      <div class="row">
+        <div class="seg" role="group" aria-label="顯示方式">
+          <button id="mode-single" type="button" aria-pressed="false">一次一天</button>
+          <button id="mode-multi" type="button" aria-pressed="true">多天同時</button>
+        </div>
+        <button id="btn-all" class="btn" type="button">顯示全部 7 天</button>
+      </div>
+      <div class="days" id="days"></div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="legend" id="legend"></div>
+    <div class="foot">位置與路線為示意，依車站與道路大致描繪。點景點可在 Google 地圖開啟。底圖資料：dataofjapan/land、Natural Earth。</div>
+  </aside>
+  <div id="map" role="region" aria-label="行程地圖"></div>
+</div>
+<script src="LEAFLET_JS_SRC"></script>
+<script>/*GEO*/</script>
+<script>/*DATA*/</script>
+<script>
+function initMap(){
+const map = L.map('map',{zoomSnap:0.25, minZoom:8, maxZoom:17, attributionControl:false});
+map.setView([35.0,135.6],9);
+map.createPane('base'); map.getPane('base').style.zIndex=200;
+map.createPane('grp'); map.getPane('grp').style.zIndex=350;
+map.createPane('routes'); map.getPane('routes').style.zIndex=400;
+map.createPane('arrows'); map.getPane('arrows').style.zIndex=550;
+map.createPane('stops'); map.getPane('stops').style.zIndex=650;
+
+// 底圖
+L.geoJSON(LAND,{pane:'base',interactive:false,style:{fillColor:'#fbf9f3',fillOpacity:1,color:'#c9c2b2',weight:0.8}}).addTo(map);
+L.geoJSON(LAKES,{pane:'base',interactive:false,style:{fillColor:'#cfdfe4',fillOpacity:1,color:'#a9c3cb',weight:0.8}}).addTo(map);
+L.geoJSON(RAIL,{pane:'base',interactive:false,style:{color:'#b8b2a5',weight:1,opacity:0.8}}).addTo(map);
+const KAMO=[[35.0560,135.7730],[35.0400,135.7735],[35.0270,135.7725],[35.0110,135.7716],[35.0037,135.7713],[34.9965,135.7692],[34.9880,135.7682],[34.9760,135.7672],[34.9620,135.7640]];
+L.polyline(KAMO,{pane:'base',interactive:false,color:'#a9c3cb',weight:4,opacity:.9}).addTo(map);
+L.marker([35.0200,135.7722],{pane:'base',interactive:false,keyboard:false,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div class="pl water" style="transform:translate(6px,-50%);letter-spacing:0">鴨川</div>'})}).addTo(map);
+PLACES.forEach(p=>L.marker(p.ll,{pane:'base',interactive:false,keyboard:false,icon:L.divIcon({className:'',html:`<div class="pl ${p.lake||p.sea?'water':''}" style="transform:translate(-50%,-50%)">${p.n}</div>`,iconSize:[0,0]})}).addTo(map));
+
+const byId = Object.fromEntries(DAYS.map(d=>[d.id,d]));
+let multi = true;
+let selected = new Set(DAYS.map(d=>d.id));
+const stopLayer = L.layerGroup().addTo(map);
+const lineLayer = L.layerGroup().addTo(map);
+const markerByKey = {};
+
+function stopMap(d){ return Object.fromEntries(d.stops.map((s,i)=>[s.id,{...s,num:i+1}])); }
+const keyOf = ll => ll[0].toFixed(4)+','+ll[1].toFixed(4);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const visibleDays = () => DAYS.filter(d=>selected.has(d.id));
+
+// ---------- 景點標記（相同位置合併） ----------
+function drawStops(){
+  stopLayer.clearLayers();
+  for(const k in markerByKey) delete markerByKey[k];
+  const agg = {};
+  visibleDays().forEach(d=>d.stops.forEach((s,i)=>{
+    const k = keyOf(s.ll);
+    (agg[k] ||= {ll:s.ll, items:[]}).items.push({d, s, num:i+1});
+  }));
+  Object.entries(agg).forEach(([k,a])=>{
+    // 同一天同地點的編號合在一顆
+    const perDay = [];
+    a.items.forEach(it=>{
+      let g = perDay.find(x=>x.d===it.d);
+      if(!g){ g={d:it.d, nums:[], opt:true}; perDay.push(g); }
+      g.nums.push(it.num); if(!it.s.optional) g.opt=false;
+    });
+    const html = '<div class="mk">'+perDay.map(g=>`<div class="d${g.opt?' opt':''}" style="--c:${g.d.color}" title="Day ${g.d.id}">${perDay.length>1?'D'+g.d.id+'·':''}${g.nums.join('·')}</div>`).join('')+'</div>';
+    const pop = '<div class="pop">'+a.items.map(it=>`<h3 style="color:${it.d.color}">Day ${it.d.id}・#${it.num} ${esc(it.s.name)}</h3><div class="meta">${esc(it.d.date)}${it.s.time?'・'+esc(it.s.time):''}</div>${it.s.note?'<p>'+esc(it.s.note)+'</p>':''}`).join('<hr style="border:0;border-top:1px solid #e3ddd0;margin:8px 0">')
+      + `<p><a href="https://www.google.com/maps/search/?api=1&query=${a.ll[0]},${a.ll[1]}" target="_blank" rel="noopener">在 Google 地圖開啟</a></p></div>`;
+    const m = L.marker(a.ll,{pane:'stops',icon:L.divIcon({className:'',html,iconSize:[0,0]}),riseOnHover:true,title:a.items.map(it=>it.s.name).filter((v,i,arr)=>arr.indexOf(v)===i).join('／')})
+      .bindPopup(pop,{maxWidth:280}).addTo(stopLayer);
+    markerByKey[k]=m;
+  });
+}
+
+// ---------- 路線、箭頭、成群圈（依縮放重算） ----------
+function offsetPath(pts, off){
+  if(!off || pts.length<2) return pts;
+  return pts.map((p,i)=>{
+    const a = pts[Math.max(0,i-1)], b = pts[Math.min(pts.length-1,i+1)];
+    let dx=b.x-a.x, dy=b.y-a.y; const L0=Math.hypot(dx,dy)||1; dx/=L0; dy/=L0;
+    return L.point(p.x - dy*off, p.y + dx*off);
+  });
+}
+function arrowIcon(color, deg){
+  return L.divIcon({className:'arw',iconSize:[0,0],html:`<svg width="18" height="18" viewBox="-9 -9 18 18" style="position:absolute;left:-9px;top:-9px;transform:rotate(${deg}deg);overflow:visible"><path d="M-5,-5 L6,0 L-5,5 L-2,0 Z" fill="${color}" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`});
+}
+function placeArrows(px, color, layer, opacity){
+  const seg=[]; let total=0;
+  for(let i=1;i<px.length;i++){ const l=px[i].distanceTo(px[i-1]); seg.push(l); total+=l; }
+  if(total<26) return;
+  const at = total<240 ? [total*0.55] : Array.from({length:Math.floor((total-60)/190)+1},(_,i)=>90+i*190);
+  at.forEach(t=>{
+    let acc=0;
+    for(let i=0;i<seg.length;i++){
+      if(acc+seg[i]>=t){
+        const r=(t-acc)/seg[i], a=px[i], b=px[i+1];
+        const p=L.point(a.x+(b.x-a.x)*r, a.y+(b.y-a.y)*r);
+        const deg=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
+        L.marker(map.layerPointToLatLng(p),{pane:'arrows',interactive:false,keyboard:false,opacity,icon:arrowIcon(color,deg)}).addTo(layer);
+        return;
+      }
+      acc+=seg[i];
+    }
+  });
+}
+function drawLines(){
+  lineLayer.clearLayers();
+  if(!hasSize()) return;
+  const vis = visibleDays(), n = vis.length, z = map.getZoom();
+  vis.forEach((d,idx)=>{
+    const sm = stopMap(d);
+    const off = (n>1 ? (idx-(n-1)/2)*5 : 0) + 3; // 往右偏一點，來回同一路線時才分得開
+    d.legs.forEach(leg=>{
+      const A=sm[leg.from], B=sm[leg.to], md=MODES[leg.mode];
+      const ll = leg.path || [A.ll,B.ll];
+      const px = offsetPath(ll.map(p=>map.latLngToLayerPoint(p)), off);
+      const latlngs = px.map(p=>map.layerPointToLatLng(p));
+      const op = leg.mode==='open' ? 0.55 : (leg.optional ? 0.6 : 0.95);
+      if(leg.mode==='rail') L.polyline(latlngs,{pane:'routes',color:'#fff',weight:md.weight+3,opacity:0.9,interactive:false}).addTo(lineLayer);
+      const pl = L.polyline(latlngs,{pane:'routes',color:d.color,weight:md.weight,opacity:op,dashArray:leg.optional&&leg.mode==='rail'?'10 6':md.dash,lineCap:leg.mode==='walk'||leg.mode==='boat'?'round':'butt'}).addTo(lineLayer);
+      pl.bindTooltip(`Day ${d.id}・${md.label}${leg.label?'：'+esc(leg.label):''}`,{sticky:true});
+      placeArrows(px, d.color, lineLayer, op);
+    });
+    if(z>=11.5){
+      d.groups.forEach(g=>{
+        const pts = g.stops.map(id=>map.latLngToLayerPoint(sm[id].ll));
+        const c = L.point(pts.reduce((s,p)=>s+p.x,0)/pts.length, pts.reduce((s,p)=>s+p.y,0)/pts.length);
+        const rpx = Math.max(...pts.map(p=>p.distanceTo(c))) + 30;
+        const cll = map.layerPointToLatLng(c);
+        const mpp = map.distance(cll, map.layerPointToLatLng(c.add([1,0])));
+        L.circle(cll,{pane:'grp',radius:rpx*mpp,color:d.color,weight:1.5,dashArray:'6 5',fillColor:d.color,fillOpacity:0.07,interactive:false}).addTo(lineLayer);
+        L.marker(map.layerPointToLatLng(c.subtract([0,rpx+2])),{pane:'arrows',interactive:false,keyboard:false,icon:L.divIcon({className:'',iconSize:[0,0],html:`<div class="grp" style="--c:${d.color}">${esc(g.name)}</div>`})}).addTo(lineLayer);
+      });
+    }
+  });
+}
+map.on('zoomend', drawLines);
+
+// ---------- 側欄 ----------
+const daysEl=document.getElementById('days'), listEl=document.getElementById('list');
+DAYS.forEach(d=>{
+  const b=document.createElement('button'); b.type='button'; b.className='chip'; b.id='chip-'+d.id; b.style.setProperty('--c',d.color);
+  b.innerHTML=`<b><i></i>Day ${d.id}</b><span>${d.date}</span>`;
+  b.addEventListener('click',()=>{
+    if(multi){ selected.has(d.id)&&selected.size>1 ? selected.delete(d.id) : selected.add(d.id); }
+    else selected=new Set([d.id]);
+    render(true);
+  });
+  daysEl.appendChild(b);
+});
+function renderList(){
+  listEl.innerHTML='';
+  visibleDays().forEach(d=>{
+    const sm=stopMap(d);
+    const sec=document.createElement('section'); sec.className='day'; sec.style.setProperty('--c',d.color);
+    let html=`<h2><span class="tag">Day ${d.id}</span>${esc(d.date)} ${esc(d.title)}</h2><ol>`;
+    d.stops.forEach((s,i)=>{
+      html+=`<li tabindex="0" data-k="${keyOf(s.ll)}" class="${s.optional?'opt':''}"><span class="n">${i+1}</span><span class="t">${esc(s.time||'')}</span> <span class="nm">${esc(s.name)}</span>${s.note?`<div class="nt">${esc(s.note)}</div>`:''}</li>`;
+      const out=d.legs.filter(l=>l.from===s.id && l.mode!=='walk' && l.mode!=='open' && l.label && !l.optional);
+      out.forEach(l=>{ html+=`<div class="leg">↓ ${MODES[l.mode].label}：${esc(l.label)}</div>`; });
+    });
+    sec.innerHTML=html+'</ol>';
+    listEl.appendChild(sec);
+  });
+  listEl.querySelectorAll('li').forEach(li=>{
+    const go=()=>{ const m=markerByKey[li.dataset.k]; if(!m) return; map.flyTo(m.getLatLng(), Math.max(map.getZoom(),14), {duration:0.6}); map.once('moveend',()=>m.openPopup()); };
+    li.addEventListener('click',go); li.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+  });
+}
+const legendEl=document.getElementById('legend');
+legendEl.innerHTML=Object.entries(MODES).map(([k,m])=>`<svg width="44" height="12"><line x1="2" y1="6" x2="42" y2="6" stroke="#1f2a2e" stroke-width="${m.weight}" ${m.dash?`stroke-dasharray="${m.dash}"`:''} stroke-linecap="${k==='walk'||k==='boat'?'round':'butt'}" opacity="${k==='open'?0.55:1}"/></svg><span>${m.label}</span>`).join('')
+ + `<svg width="44" height="24"><circle cx="22" cy="12" r="10" fill="#fff" stroke="#1f2a2e" stroke-width="1.5" stroke-dasharray="6 5"/></svg><span>可一起逛的景點（放大地圖後顯示）</span>`
+ + `<svg width="44" height="24"><circle cx="22" cy="12" r="10" fill="#fff" stroke="#1f2a2e" stroke-width="2" stroke-dasharray="3 2"/></svg><span>可選行程（二選一）</span>`
+ + `<svg width="44" height="18"><path d="M8,4 L30,9 L8,14 L14,9 Z" fill="#1f2a2e"/></svg><span>箭頭為前進方向；數字為當天順序</span>`;
+
+const btnS=document.getElementById('mode-single'), btnM=document.getElementById('mode-multi');
+function setMode(m){ multi=m; btnS.setAttribute('aria-pressed',String(!m)); btnM.setAttribute('aria-pressed',String(m));
+  if(!m && selected.size>1){ selected=new Set([Math.min(...selected)]); } render(true); }
+btnS.addEventListener('click',()=>setMode(false));
+btnM.addEventListener('click',()=>setMode(true));
+document.getElementById('btn-all').addEventListener('click',()=>{ multi=true; btnS.setAttribute('aria-pressed','false'); btnM.setAttribute('aria-pressed','true'); selected=new Set(DAYS.map(d=>d.id)); render(true); });
+
+let fitted=false;
+const hasSize=()=>{ const s=map.getSize(); return s.x>40 && s.y>40; };
+function fit(){
+  if(!hasSize()) return;
+  if(!fitted){ try{ map.setMaxBounds([[33.8,134.2],[36.2,137.1]]); }catch(e){} }
+  fitted=true;
+  const b=L.latLngBounds([]);
+  visibleDays().forEach(d=>{ d.stops.forEach(s=>b.extend(s.ll)); d.legs.forEach(l=>l.path&&l.path.forEach(p=>b.extend(p))); });
+  if(b.isValid()) map.fitBounds(b,{padding:[36,36],maxZoom:15});
+}
+function render(refit){
+  DAYS.forEach(d=>document.getElementById('chip-'+d.id).setAttribute('aria-pressed',String(selected.has(d.id))));
+  drawStops(); renderList();
+  if(refit) fit(); drawLines();
+}
+const hm=/^#day-([1-7])$/.exec(location.hash);
+if(hm){ multi=false; btnS.setAttribute('aria-pressed','true'); btnM.setAttribute('aria-pressed','false'); selected=new Set([+hm[1]]); }
+render(true);
+const ro=new ResizeObserver(()=>{ map.invalidateSize(false); if(!fitted){ fit(); } drawLines(); });
+ro.observe(document.getElementById('map'));
+window.addEventListener('load',()=>{ map.invalidateSize(false); if(!fitted) fit(); drawLines(); });
+}
+(function(){
+  const el=document.getElementById('map'); let started=false;
+  const tryStart=()=>{ if(started) return; const r=el.getBoundingClientRect(); if(r.width>40&&r.height>40){ started=true; initMap(); } };
+  new ResizeObserver(tryStart).observe(el);
+  window.addEventListener('load',tryStart); tryStart();
+})();
+</script>
+</body>
+</html>
